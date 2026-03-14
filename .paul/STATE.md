@@ -5,26 +5,26 @@
 See: .paul/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Riley and Charlotte can tip AFL games each week and track their results against each other.
-**Current focus:** v0.4 Round Locking — In Progress
+**Current focus:** v0.5 Round 0 Support — ✅ COMPLETE
 
 ## Current Position
 
-Milestone: v0.4 Round Locking — ✅ COMPLETE
-Phase: 9 of 9 (UI Locking) — Complete
+Milestone: v0.5 Round 0 Support — ✅ COMPLETE
+Phase: 10 of 10 (Round 0 Support) — Complete
 Plan: All plans complete
 Status: Milestone shipped
-Last activity: 2026-03-14 — Phase 9 complete, v0.4.0 done
+Last activity: 2026-03-15 — Phase 10 complete, v0.5.0 done
 
 Progress:
-- v0.4 Round Locking: [██████████] 100%
-- Phase 9: [██████████] 100%
+- v0.5 Round 0 Support: [██████████] 100%
+- Phase 10: [██████████] 100%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [All loops complete — v0.4.0 done]
+  ✓        ✓        ✓     [All loops complete — v0.5.0 done]
 ```
 
 ## Accumulated Context
@@ -51,9 +51,9 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-14
-Stopped at: v0.4.0 Round Locking complete — all features shipped
-Next action: Use the app! Or run /paul:milestone to plan v0.5
+Last session: 2026-03-15
+Stopped at: v0.5.0 Round 0 Support complete — all features shipped
+Next action: Use the app! Or run /paul:milestone to plan v0.6
 Resume file: .paul/PROJECT.md
 
 ---

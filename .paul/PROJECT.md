@@ -12,9 +12,9 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 
 | Attribute | Value |
 |-----------|-------|
-| Version | 0.4.0 |
+| Version | 0.5.0 |
 | Status | Complete |
-| Last Updated | 2026-03-14 |
+| Last Updated | 2026-03-15 |
 
 ## Requirements
 
@@ -34,6 +34,7 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 - [x] Skeleton loading states and error alerts across all pages — Phase 6
 - [x] Leaderboard shows X/Y for in-progress rounds, clean totals when complete — Phase 7
 - [x] Tips page locks when round starts — alert shown, selected tip visible, cursor signals no interaction — Phase 8–9
+- [x] Round 0 (AFL Opening Round) supported — navigate, tip, and view results for round 0 — Phase 10
 
 ### Active (In Progress)
 
@@ -90,6 +91,7 @@ React 19 + Vite 8 frontend with Mantine v8 UI library. Express backend on port 3
 | Stack gap on parent for list spacing | Avoids unwanted trailing margin on last child | 2026-03-14 | Active |
 | Client-side deadline detection | Localhost app — no server authority needed; time comparison from game dates sufficient | 2026-03-14 | Active |
 | locked prop separate from disabled on GameCard | Mantine disabled grays out variant — need locked to preserve tip selection visibility | 2026-03-14 | Active |
+| `round !== undefined` for Squiggle API query | `0` is falsy in JS — truthy check silently drops round filter for Round 0 | 2026-03-15 | Active |
 
 ## Success Metrics
 
@@ -128,4 +130,4 @@ React 19 + Vite 8 frontend with Mantine v8 UI library. Express backend on port 3
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-03-14 after Phase 9 — v0.4.0 Round Locking complete*
+*Last updated: 2026-03-15 after Phase 10 — v0.5.0 Round 0 Support complete*

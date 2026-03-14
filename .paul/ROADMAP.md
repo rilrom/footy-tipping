@@ -6,11 +6,15 @@ Build a local React app where Riley and Charlotte can tip AFL games each week an
 
 ## Current Milestone
 
+**v0.5 Round 0 Support** (v0.5.0)
+Status: ✅ Complete
+Phases: 1 of 1 complete
+
+## Previous Milestones
+
 **v0.4 Round Locking** (v0.4.0)
 Status: ✅ Complete
 Phases: 2 of 2 complete
-
-## Previous Milestone
 
 **v0.3 Polish** (v0.3.0)
 Status: ✅ Complete
@@ -29,6 +33,7 @@ Phases: 3 of 3 complete
 | 7 | Leaderboard Enhancements | 1 | ✅ Complete | 2026-03-14 |
 | 8 | Deadline Detection | 1 | ✅ Complete | 2026-03-14 |
 | 9 | UI Locking | 1 | ✅ Complete | 2026-03-14 |
+| 10 | Round 0 Support | 1 | ✅ Complete | 2026-03-15 |
 
 ## Phase Details
 
@@ -117,6 +122,11 @@ Plans: TBD (defined during /paul:plan)
 Focus: Prevent tip changes in the UI once the round deadline has passed
 Plans: TBD (defined during /paul:plan)
 
+### Phase 10: Round 0 Support
+
+Focus: Support Round 0 as a valid tipping round (AFL introduced Round 0 this season; Squiggle provides data for it)
+Plans: TBD (defined during /paul:plan)
+
 ---
 *Roadmap created: 2026-03-14*
-*Last updated: 2026-03-14*
+*Last updated: 2026-03-15 — v0.5.0 complete*

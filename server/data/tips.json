@@ -1,5 +1,21 @@
 {
   "2026": {
+    "0": {
+      "riley": {
+        "38494": "Carlton",
+        "38495": "Gold Coast",
+        "38496": "Hawthorn",
+        "38497": "Brisbane Lions",
+        "38498": "St Kilda"
+      },
+      "charlotte": {
+        "38494": "Carlton",
+        "38495": "Geelong",
+        "38496": "Greater Western Sydney",
+        "38497": "Brisbane Lions",
+        "38498": "Collingwood"
+      }
+    },
     "1": {
       "riley": {
         "38499": "Richmond",

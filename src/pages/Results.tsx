@@ -116,9 +116,9 @@ export default function Results() {
       <Group gap="xs" align="center">
         <ActionIcon
           variant="default"
-          disabled={round === null || round <= 1}
+          disabled={round === null || round <= 0}
           onClick={() => {
-            if (round !== null && round > 1) {
+            if (round !== null && round > 0) {
               setRoundOffset((o) => o - 1);
             }
           }}

@@ -17,7 +17,7 @@ async function squiggleFetch<T>(query: string): Promise<T> {
 }
 
 export async function getGames(year: number, round?: number): Promise<Game[]> {
-  const query = round
+  const query = round !== undefined
     ? `q=games;year=${year};round=${round}`
     : `q=games;year=${year}`;
 
