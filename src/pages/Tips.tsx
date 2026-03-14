@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import GameCard from "../components/GameCard";
-import { useCurrentRound, useGames } from "../hooks/squiggle";
+import { useCurrentRound, useGames, useRoundLocked } from "../hooks/squiggle";
 import { useSaveTips, useTips } from "../hooks/tips";
 import type { Game } from "../types/squiggle";
 
@@ -46,8 +46,22 @@ export default function Tips() {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
+  const roundLocked = useRoundLocked(games);
+
+  const isLocked = roundLocked || roundOffset < 0;
+
+  const roundComplete = games.length > 0 && games.every((g) => g.complete === 100);
+
+  const lockedMessage = roundComplete
+    ? "This round is complete — tips are locked."
+    : "This round has started — tips are locked.";
+
   function handleTip(game: Game, teamName: string) {
     if (round === null) {
+      return;
+    }
+
+    if (isLocked) {
       return;
     }
 
@@ -120,12 +134,18 @@ export default function Tips() {
         <Text c="dimmed">No games found for this round.</Text>
       ) : (
         <Stack gap="sm">
+          {isLocked && (
+            <Alert color="yellow" title="Tipping closed">
+              {lockedMessage}
+            </Alert>
+          )}
           {sortedGames.map((game) => (
             <GameCard
               key={game.id}
               game={game}
               tip={tips[game.id.toString()] ?? null}
               onTip={(teamName) => handleTip(game, teamName)}
+              locked={isLocked}
               disabled={game.complete === 100}
             />
           ))}

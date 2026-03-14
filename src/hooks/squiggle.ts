@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentRound, getGames } from "../api/squiggle";
+import { isRoundLocked } from "../lib/deadline";
 import type { Game } from "../types/squiggle";
 
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
@@ -27,4 +29,20 @@ export function useCurrentRound(year: number) {
     queryFn: () => getCurrentRound(year),
     staleTime: STALE_TIME,
   });
+}
+
+export function useRoundLocked(games: Game[]): boolean {
+  const [locked, setLocked] = useState(() => isRoundLocked(games));
+
+  useEffect(() => {
+    setLocked(isRoundLocked(games));
+
+    const interval = setInterval(() => {
+      setLocked(isRoundLocked(games));
+    }, 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [games]);
+
+  return locked;
 }

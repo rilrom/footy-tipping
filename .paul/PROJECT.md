@@ -12,7 +12,7 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 
 | Attribute | Value |
 |-----------|-------|
-| Version | 0.3.0 |
+| Version | 0.4.0 |
 | Status | Complete |
 | Last Updated | 2026-03-14 |
 
@@ -33,6 +33,7 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 - [x] Home page with current round display and quick-action navigation — Phase 5
 - [x] Skeleton loading states and error alerts across all pages — Phase 6
 - [x] Leaderboard shows X/Y for in-progress rounds, clean totals when complete — Phase 7
+- [x] Tips page locks when round starts — alert shown, selected tip visible, cursor signals no interaction — Phase 8–9
 
 ### Active (In Progress)
 
@@ -40,7 +41,6 @@ None.
 
 ### Planned (Next)
 
-- [ ] (Future) Round locking / tipping deadline enforcement
 - [ ] (Future) Push notifications when results are in
 
 ### Out of Scope
@@ -88,6 +88,8 @@ React 19 + Vite 8 frontend with Mantine v8 UI library. Express backend on port 3
 | Mantine v8 UI library | Replaces inline styles; out-of-the-box components, no custom theme | 2026-03-14 | Active |
 | Auto-save tips on click | No explicit save button reduces friction | 2026-03-14 | Active |
 | Stack gap on parent for list spacing | Avoids unwanted trailing margin on last child | 2026-03-14 | Active |
+| Client-side deadline detection | Localhost app — no server authority needed; time comparison from game dates sufficient | 2026-03-14 | Active |
+| locked prop separate from disabled on GameCard | Mantine disabled grays out variant — need locked to preserve tip selection visibility | 2026-03-14 | Active |
 
 ## Success Metrics
 
@@ -126,4 +128,4 @@ React 19 + Vite 8 frontend with Mantine v8 UI library. Express backend on port 3
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-03-14 after Phase 7 — v0.3.0 Polish complete*
+*Last updated: 2026-03-14 after Phase 9 — v0.4.0 Round Locking complete*

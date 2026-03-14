@@ -6,6 +6,12 @@ Build a local React app where Riley and Charlotte can tip AFL games each week an
 
 ## Current Milestone
 
+**v0.4 Round Locking** (v0.4.0)
+Status: ✅ Complete
+Phases: 2 of 2 complete
+
+## Previous Milestone
+
 **v0.3 Polish** (v0.3.0)
 Status: ✅ Complete
 Phases: 3 of 3 complete
@@ -21,6 +27,8 @@ Phases: 3 of 3 complete
 | 5 | Home Page | 1 | ✅ Complete | 2026-03-14 |
 | 6 | Loading & Errors | 1 | ✅ Complete | 2026-03-14 |
 | 7 | Leaderboard Enhancements | 1 | ✅ Complete | 2026-03-14 |
+| 8 | Deadline Detection | 1 | ✅ Complete | 2026-03-14 |
+| 9 | UI Locking | 1 | ✅ Complete | 2026-03-14 |
 
 ## Phase Details
 
@@ -98,6 +106,16 @@ Phases: 3 of 3 complete
 
 **Plans:**
 - TBD (defined during /paul:plan)
+
+### Phase 8: Deadline Detection
+
+Focus: Detect when a round has started and tipping should be locked
+Plans: TBD (defined during /paul:plan)
+
+### Phase 9: UI Locking
+
+Focus: Prevent tip changes in the UI once the round deadline has passed
+Plans: TBD (defined during /paul:plan)
 
 ---
 *Roadmap created: 2026-03-14*

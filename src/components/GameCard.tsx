@@ -6,6 +6,7 @@ interface GameCardProps {
   tip: string | null;
   onTip: (teamName: string) => void;
   disabled?: boolean;
+  locked?: boolean;
 }
 
 function formatDate(dateStr: string): string {
@@ -22,7 +23,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function GameCard(props: GameCardProps) {
-  const { game, tip, onTip, disabled = false } = props;
+  const { game, tip, onTip, disabled = false, locked = false } = props;
 
   return (
     <Card shadow="xs" withBorder padding="md">
@@ -34,12 +35,12 @@ export default function GameCard(props: GameCardProps) {
         <Button
           variant={tip === game.hteam ? "filled" : "default"}
           onClick={() => {
-            if (!disabled) {
+            if (!disabled && !locked) {
               onTip(game.hteam);
             }
           }}
           disabled={disabled}
-          style={{ width: "44%" }}
+          style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.hteam}
         </Button>
@@ -51,12 +52,12 @@ export default function GameCard(props: GameCardProps) {
         <Button
           variant={tip === game.ateam ? "filled" : "default"}
           onClick={() => {
-            if (!disabled) {
+            if (!disabled && !locked) {
               onTip(game.ateam);
             }
           }}
           disabled={disabled}
-          style={{ width: "44%" }}
+          style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.ateam}
         </Button>
