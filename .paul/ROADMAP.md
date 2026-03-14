@@ -6,7 +6,7 @@ Build a local React app where Riley and Charlotte can tip AFL games each week an
 
 ## Current Milestone
 
-**v0.1 Initial Release** (v0.1.0)
+**v0.3 Polish** (v0.3.0)
 Status: ✅ Complete
 Phases: 3 of 3 complete
 
@@ -17,6 +17,10 @@ Phases: 3 of 3 complete
 | 1 | Foundation | 2 | ✅ Complete | 2026-03-14 |
 | 2 | Tipping | 2 | ✅ Complete | 2026-03-14 |
 | 3 | Results & Leaderboard | 2 | ✅ Complete | 2026-03-14 |
+| 4 | Mantine UI | 2 | ✅ Complete | 2026-03-14 |
+| 5 | Home Page | 1 | ✅ Complete | 2026-03-14 |
+| 6 | Loading & Errors | 1 | ✅ Complete | 2026-03-14 |
+| 7 | Leaderboard Enhancements | 1 | ✅ Complete | 2026-03-14 |
 
 ## Phase Details
 
@@ -24,13 +28,6 @@ Phases: 3 of 3 complete
 
 **Goal:** Working React app with Squiggle API client and typed data layer
 **Depends on:** Nothing (first phase)
-**Research:** Unlikely (Squiggle API is simple REST)
-
-**Scope:**
-- Vite + React + TypeScript project scaffold
-- Squiggle API client with typed responses
-- TypeScript types for games, teams, results
-- Basic app shell with navigation
 
 **Plans:**
 - [x] 01-01: Scaffold app, API client, types, app shell
@@ -39,13 +36,7 @@ Phases: 3 of 3 complete
 ### Phase 2: Tipping
 
 **Goal:** Riley and Charlotte can view the current round's fixtures and enter their tips
-**Depends on:** Phase 1 (Squiggle API client, types)
-**Research:** Unlikely
-
-**Scope:**
-- Current round fixtures view from Squiggle API
-- Tip selection UI per game for each player
-- Tips persisted to localStorage
+**Depends on:** Phase 1
 
 **Plans:**
 - [x] 02-01: Round fixtures view and tip selection UI
@@ -54,17 +45,59 @@ Phases: 3 of 3 complete
 ### Phase 3: Results & Leaderboard
 
 **Goal:** See round results and a running season leaderboard between Riley and Charlotte
-**Depends on:** Phase 2 (tips data structure)
-**Research:** Unlikely
-
-**Scope:**
-- Round results view (pull completed game results from Squiggle)
-- Per-round scoring (who tipped correctly)
-- Season leaderboard (cumulative correct tips)
+**Depends on:** Phase 2
 
 **Plans:**
 - [x] 03-01: Round results and per-round scoring
 - [x] 03-02: Season leaderboard
+
+### Phase 4: Mantine UI
+
+**Goal:** Replace all inline styles with Mantine UI components throughout the app
+**Depends on:** Phase 3
+
+**Plans:**
+- [x] 04-01: Install Mantine + convert app shell (App, Nav, GameCard)
+- [x] 04-02: Convert pages (Tips, Results, Leaderboard)
+
+### Phase 5: Home Page
+
+**Goal:** Improve the welcome page with current round context and quick navigation
+**Depends on:** Phase 4 (Mantine in place)
+
+**Scope:**
+- Show current round number and status on home page
+- Quick-action buttons to jump to Tips or Results for the current round
+- Generally more useful than the current placeholder welcome message
+
+**Plans:**
+- TBD (defined during /paul:plan)
+
+### Phase 6: Loading & Errors
+
+**Goal:** Better loading states across all pages and graceful error handling for API failures
+**Depends on:** Phase 4 (Mantine in place)
+
+**Scope:**
+- Replace plain text loading indicators with Mantine Skeleton or Loader components
+- Handle Squiggle API errors gracefully (show user-friendly messages, not broken UI)
+- Consistent empty/error states across Tips, Results, Leaderboard
+
+**Plans:**
+- TBD (defined during /paul:plan)
+
+### Phase 7: Leaderboard Enhancements
+
+**Goal:** Show game totals in leaderboard round breakdown in a more informative format
+**Depends on:** Phase 4 (Mantine in place)
+
+**Scope:**
+- In-progress rounds: show `6/9` (correct tips / total games played)
+- Completed rounds: show just `9` (total games, no fraction needed)
+- Apply to both the per-player score cells and the games column
+
+**Plans:**
+- TBD (defined during /paul:plan)
 
 ---
 *Roadmap created: 2026-03-14*

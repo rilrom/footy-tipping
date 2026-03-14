@@ -1,3 +1,14 @@
+import {
+  ActionIcon,
+  Alert,
+  Group,
+  Loader,
+  SegmentedControl,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useState } from "react";
 import GameCard from "../components/GameCard";
 import { useCurrentRound, useGames } from "../hooks/squiggle";
@@ -17,7 +28,7 @@ export default function Tips() {
 
   const round = currentRound !== undefined ? currentRound + roundOffset : null;
 
-  const { data: games = [], isPending: gamesLoading } = useGames(
+  const { data: games = [], isPending: gamesLoading, isError: gamesError } = useGames(
     year,
     round ?? undefined,
     { enabled: round !== null },
@@ -39,7 +50,7 @@ export default function Tips() {
     if (round === null) {
       return;
     }
-    
+
     saveTips.mutate({
       year: year.toString(),
       round: round.toString(),
@@ -48,121 +59,78 @@ export default function Tips() {
     });
   }
 
-  const playerBtn = (p: Player): React.CSSProperties => ({
-    padding: "0.5rem 1.5rem",
-    borderRadius: "6px",
-    border: "2px solid #ccc",
-    cursor: "pointer",
-    fontWeight: "500",
-    fontSize: "0.95rem",
-    backgroundColor: player === p ? "#1a1a1a" : "#fff",
-    color: player === p ? "#fff" : "#1a1a1a",
-    borderColor: player === p ? "#1a1a1a" : "#ccc",
-    marginRight: "0.5rem",
-  });
-
-  const navBtn = (disabled: boolean): React.CSSProperties => ({
-    padding: "0.4rem 0.8rem",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    backgroundColor: "#fff",
-    cursor: disabled ? "default" : "pointer",
-    fontSize: "1rem",
-    color: disabled ? "#ccc" : "#1a1a1a",
-  });
-
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "1.25rem",
-          gap: "1rem",
-        }}
-      >
-        <h1 style={{ margin: 0, color: "#1a1a1a" }}>
+    <Stack gap="md">
+      <Group align="baseline" gap="sm">
+        <Title order={1}>
           Tips{round !== null ? ` — Round ${round}` : " — Loading..."}
-        </h1>
-        {saveTips.isPending && (
-          <span style={{ fontSize: "0.8rem", color: "#999" }}>Saving...</span>
-        )}
-      </div>
+        </Title>
+        {saveTips.isPending && <Loader size="xs" />}
+      </Group>
 
-      {/* Player selector */}
-      <div style={{ marginBottom: "1rem" }}>
-        <button
-          type="button"
-          style={playerBtn("riley")}
-          onClick={() => setPlayer("riley")}
-        >
-          Riley
-        </button>
-        <button
-          type="button"
-          style={playerBtn("charlotte")}
-          onClick={() => setPlayer("charlotte")}
-        >
-          Charlotte
-        </button>
-      </div>
+      <SegmentedControl
+        value={player}
+        onChange={(v) => setPlayer(v as Player)}
+        data={[
+          { value: "riley", label: "Riley" },
+          { value: "charlotte", label: "Charlotte" },
+        ]}
+        w="fit-content"
+      />
 
-      {/* Round navigator */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "1.25rem",
-          gap: "0.75rem",
-        }}
-      >
-        <button
-          type="button"
-          style={navBtn(round === null || round <= 1)}
+      <Group gap="xs" align="center">
+        <ActionIcon
+          variant="default"
+          disabled={round === null || round <= 1}
           onClick={() => {
             if (round !== null && round > 1) {
               setRoundOffset((o) => o - 1);
             }
           }}
-          disabled={round === null || round <= 1}
         >
           ‹
-        </button>
-        <span
-          style={{ fontWeight: "600", minWidth: "80px", textAlign: "center" }}
-        >
+        </ActionIcon>
+        <Text fw={600} w={80} ta="center">
           {round !== null ? `Round ${round}` : "—"}
-        </span>
-        <button
-          type="button"
-          style={navBtn(round === null)}
+        </Text>
+        <ActionIcon
+          variant="default"
+          disabled={round === null}
           onClick={() => {
             if (round !== null) {
               setRoundOffset((o) => o + 1);
             }
           }}
-          disabled={round === null}
         >
           ›
-        </button>
-      </div>
+        </ActionIcon>
+      </Group>
 
-      {/* Games */}
-      {gamesLoading ? (
-        <p style={{ color: "#999" }}>Loading fixtures...</p>
+      {gamesError ? (
+        <Alert color="red" title="Could not load fixtures">
+          The Squiggle API may be unavailable. Try refreshing.
+        </Alert>
+      ) : gamesLoading ? (
+        <Stack gap="sm">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} height={72} radius="md" />
+          ))}
+        </Stack>
       ) : sortedGames.length === 0 ? (
-        <p style={{ color: "#999" }}>No games found for this round.</p>
+        <Text c="dimmed">No games found for this round.</Text>
       ) : (
-        sortedGames.map((game) => (
-          <GameCard
-            key={game.id}
-            game={game}
-            tip={tips[game.id.toString()] ?? null}
-            onTip={(teamName) => handleTip(game, teamName)}
-            disabled={game.complete === 100}
-          />
-        ))
+        <Stack gap="sm">
+          {sortedGames.map((game) => (
+            <GameCard
+              key={game.id}
+              game={game}
+              tip={tips[game.id.toString()] ?? null}
+              onTip={(teamName) => handleTip(game, teamName)}
+              disabled={game.complete === 100}
+            />
+          ))}
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 }

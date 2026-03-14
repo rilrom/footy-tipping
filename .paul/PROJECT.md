@@ -12,8 +12,8 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 
 | Attribute | Value |
 |-----------|-------|
-| Version | 0.1.0 |
-| Status | MVP Complete |
+| Version | 0.3.0 |
+| Status | Complete |
 | Last Updated | 2026-03-14 |
 
 ## Requirements
@@ -29,10 +29,14 @@ Riley and Charlotte can tip AFL games each week and track their results against 
 - [x] Side-by-side summary view with agreement highlighting — Phase 2
 - [x] Round results with correct/incorrect tip highlighting — Phase 3
 - [x] Season leaderboard with cumulative scores and round breakdown — Phase 3
+- [x] Mantine UI library with consistent components throughout — Phase 4
+- [x] Home page with current round display and quick-action navigation — Phase 5
+- [x] Skeleton loading states and error alerts across all pages — Phase 6
+- [x] Leaderboard shows X/Y for in-progress rounds, clean totals when complete — Phase 7
 
 ### Active (In Progress)
 
-None — MVP complete.
+None.
 
 ### Planned (Next)
 
@@ -43,7 +47,6 @@ None — MVP complete.
 
 - Multi-user / public deployment
 - Authentication / accounts (localhost only, two known users)
-- CSS framework or component library (inline styles only)
 - Database (JSON file persistence is sufficient)
 
 ## Target Users
@@ -59,7 +62,7 @@ None — MVP complete.
 Personal project for household use only. No monetisation, no public access.
 
 **Technical Context:**
-React 19 + Vite 8 frontend. Express backend on port 3001 with JSON file persistence. Squiggle API for fixture and results data. Vite proxies /api to backend.
+React 19 + Vite 8 frontend with Mantine v8 UI library. Express backend on port 3001 with JSON file persistence. Squiggle API for fixture and results data. Vite proxies /api to backend.
 
 ## Constraints
 
@@ -82,8 +85,9 @@ React 19 + Vite 8 frontend. Express backend on port 3001 with JSON file persiste
 | Express + JSON file for persistence | localStorage too easily lost; disk file survives browser clears | 2026-03-14 | Active |
 | React 19 + Vite 8 + Router v7 | Latest stable versions | 2026-03-14 | Active |
 | tsx for server execution | Simpler than ts-node, no tsconfig workarounds needed | 2026-03-14 | Active |
-| Inline styles only | Minimal dependencies, no CSS framework | 2026-03-14 | Active |
+| Mantine v8 UI library | Replaces inline styles; out-of-the-box components, no custom theme | 2026-03-14 | Active |
 | Auto-save tips on click | No explicit save button reduces friction | 2026-03-14 | Active |
+| Stack gap on parent for list spacing | Avoids unwanted trailing margin on last child | 2026-03-14 | Active |
 
 ## Success Metrics
 
@@ -97,6 +101,7 @@ React 19 + Vite 8 frontend. Express backend on port 3001 with JSON file persiste
 | Layer | Technology | Notes |
 |-------|------------|-------|
 | Frontend | React 19 + Vite 8 | localhost:5173 |
+| UI Library | Mantine v8 | @mantine/core + @mantine/hooks |
 | Routing | React Router v7 | BrowserRouter |
 | Backend | Express 4 | localhost:3001 |
 | Runtime | tsx | Server TypeScript execution |
@@ -110,7 +115,6 @@ React 19 + Vite 8 frontend. Express backend on port 3001 with JSON file persiste
 |-------|---------|
 | / | Welcome page |
 | /tips | Enter tips for current/any round |
-| /summary | Compare both players' picks side-by-side |
 | /results | View round results with correct/incorrect highlighting |
 | /leaderboard | Season totals and round-by-round breakdown |
 
@@ -122,4 +126,4 @@ React 19 + Vite 8 frontend. Express backend on port 3001 with JSON file persiste
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-03-14 after Phase 3 — v0.1.0 MVP complete*
+*Last updated: 2026-03-14 after Phase 7 — v0.3.0 Polish complete*

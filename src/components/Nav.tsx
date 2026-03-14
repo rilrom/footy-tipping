@@ -1,52 +1,46 @@
+import { Group, Text } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 
-export default function Nav() {
-  const linkStyle = ({
-    isActive,
-  }: {
-    isActive: boolean;
-  }): React.CSSProperties => ({
-    marginRight: "1.5rem",
+function navLinkStyle({
+  isActive,
+}: {
+  isActive: boolean;
+}): React.CSSProperties {
+  return {
     textDecoration: "none",
-    color: isActive ? "#1a1a1a" : "#666",
-    fontWeight: isActive ? "600" : "400",
-    borderBottom: isActive ? "2px solid #1a1a1a" : "2px solid transparent",
+    fontWeight: isActive ? 600 : 400,
+    color: isActive
+      ? "var(--mantine-color-text)"
+      : "var(--mantine-color-dimmed)",
+    borderBottom: isActive
+      ? "2px solid var(--mantine-color-text)"
+      : "2px solid transparent",
     paddingBottom: "2px",
-    fontSize: "0.95rem",
-  });
+    fontSize: "var(--mantine-font-size-sm)",
+  };
+}
 
+export default function Nav() {
   return (
-    <nav
-      style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "1rem 1.5rem",
-        borderBottom: "1px solid #e5e5e5",
-        backgroundColor: "#fff",
-      }}
-    >
-      <span
-        style={{
-          fontWeight: "700",
-          fontSize: "1.1rem",
-          marginRight: "2.5rem",
-          color: "#1a1a1a",
-        }}
-      >
+    <Group h="100%" px="md" gap="lg">
+      <Text fw={700} size="lg">
         Footy Tipping 🏉
-      </span>
-      <NavLink to="/" end style={linkStyle}>
-        Home
-      </NavLink>
-      <NavLink to="/tips" style={linkStyle}>
-        Tips
-      </NavLink>
-      <NavLink to="/results" style={linkStyle}>
-        Results
-      </NavLink>
-      <NavLink to="/leaderboard" style={linkStyle}>
-        Leaderboard
-      </NavLink>
-    </nav>
+      </Text>
+
+      <Group gap="sm">
+        <NavLink to="/" end style={navLinkStyle}>
+          Home
+        </NavLink>
+        <NavLink to="/tips" style={navLinkStyle}>
+          Tips
+        </NavLink>
+        <NavLink to="/results" style={navLinkStyle}>
+          Results
+        </NavLink>
+        <NavLink to="/leaderboard" style={navLinkStyle}>
+          Leaderboard
+        </NavLink>
+      </Group>
+    </Group>
   );
 }

@@ -1,3 +1,14 @@
+import {
+  Alert,
+  Group,
+  Paper,
+  SimpleGrid,
+  Skeleton,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useState } from "react";
 import { useGames } from "../hooks/squiggle";
 import { useAllTips } from "../hooks/tips";
@@ -12,7 +23,9 @@ interface RoundResult {
   round: number;
   riley: number | null;
   charlotte: number | null;
-  total: number;
+  completedGames: number;
+  totalGames: number;
+  isComplete: boolean;
 }
 
 function calcRoundScore(
@@ -36,7 +49,7 @@ function calcRoundScore(
 export default function Leaderboard() {
   const [year] = useState(new Date().getFullYear());
 
-  const { data: allGames = [], isPending: gamesLoading } = useGames(year);
+  const { data: allGames = [], isPending: gamesLoading, isError: gamesError } = useGames(year);
 
   const { data: yearTips = {} } = useAllTips(year);
 
@@ -52,17 +65,33 @@ export default function Leaderboard() {
     return acc;
   }, {});
 
+  const allByRound = allGames.reduce<Record<number, Game[]>>((acc, g) => {
+    if (!acc[g.round]) {
+      acc[g.round] = [];
+    }
+
+    acc[g.round].push(g);
+
+    return acc;
+  }, {});
+
   const roundResults: RoundResult[] = Object.entries(yearTips as YearTips)
     .map(([roundStr, players]) => {
       const roundNum = parseInt(roundStr, 10);
 
-      const gamesInRound = byRound[roundNum] ?? [];
+      const completedInRound = byRound[roundNum] ?? [];
+
+      const allInRound = allByRound[roundNum] ?? [];
 
       return {
         round: roundNum,
-        riley: calcRoundScore(gamesInRound, players.riley),
-        charlotte: calcRoundScore(gamesInRound, players.charlotte),
-        total: gamesInRound.length,
+        riley: calcRoundScore(completedInRound, players.riley),
+        charlotte: calcRoundScore(completedInRound, players.charlotte),
+        completedGames: completedInRound.length,
+        totalGames: allInRound.length,
+        isComplete:
+          allInRound.length > 0 &&
+          completedInRound.length === allInRound.length,
       };
     })
     .filter((r) => r.riley !== null || r.charlotte !== null)
@@ -74,231 +103,212 @@ export default function Leaderboard() {
     (sum, r) => sum + (r.charlotte ?? 0),
     0,
   );
-  
+
   const roundsPlayed = roundResults.length;
 
-  const leaderColor = (mine: number, theirs: number): string =>
-    mine > theirs ? "#16a34a" : "#1a1a1a";
-
-  const cellHighlight = (
-    mine: number | null,
-    theirs: number | null,
-  ): React.CSSProperties => {
-    if (mine === null || theirs === null || mine === theirs) {
-      return {};
-    }
-
-    return mine > theirs ? { color: "#16a34a", fontWeight: "700" } : {};
-  };
-
   return (
-    <div>
-      <h1 style={{ marginBottom: "1.25rem", color: "#1a1a1a" }}>
-        Leaderboard — {year}
-      </h1>
+    <Stack gap="md">
+      <Title order={1}>Leaderboard — {year}</Title>
 
-      {gamesLoading ? (
-        <p style={{ color: "#999" }}>Loading...</p>
+      {gamesError ? (
+        <Alert color="red" title="Could not load leaderboard">
+          The Squiggle API may be unavailable. Try refreshing.
+        </Alert>
+      ) : gamesLoading ? (
+        <>
+          <Paper withBorder p="xl">
+            <SimpleGrid cols={3}>
+              <Stack align="center" gap={4}>
+                <Text fw={700}>Riley</Text>
+                <Skeleton height={34} width={50} />
+                <Text size="sm" c="dimmed">
+                  correct tips
+                </Text>
+              </Stack>
+
+              <Stack align="center" gap={4}>
+                <Text size="xs" c="dimmed">
+                  after
+                </Text>
+                <Skeleton height={22} width={30} />
+                <Text size="xs" c="dimmed">
+                  rounds
+                </Text>
+              </Stack>
+
+              <Stack align="center" gap={4}>
+                <Text fw={700}>Charlotte</Text>
+                <Skeleton height={34} width={50} />
+                <Text size="sm" c="dimmed">
+                  correct tips
+                </Text>
+              </Stack>
+            </SimpleGrid>
+          </Paper>
+
+          <Title order={2} fz="md">
+            Round by Round
+          </Title>
+
+          <Table striped withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Round</Table.Th>
+                <Table.Th ta="center">Riley</Table.Th>
+                <Table.Th ta="center">Charlotte</Table.Th>
+                <Table.Th ta="center">Games</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Table.Tr key={i}>
+                  <Table.Td>
+                    <Skeleton height={14} width={60} />
+                  </Table.Td>
+                  <Table.Td>
+                    <Group justify="center">
+                      <Skeleton height={14} width={30} />
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group justify="center">
+                      <Skeleton height={14} width={30} />
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group justify="center">
+                      <Skeleton height={14} width={30} />
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </>
       ) : roundsPlayed === 0 ? (
-        <p style={{ color: "#999" }}>No completed rounds with tips yet.</p>
+        <Text c="dimmed">No completed rounds with tips yet.</Text>
       ) : (
         <>
-          {/* Season totals card */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-              backgroundColor: "#fff",
-              border: "1px solid #e5e5e5",
-              borderRadius: "10px",
-              padding: "1.5rem 1.25rem",
-              marginBottom: "1.75rem",
-            }}
-          >
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1rem",
-                  marginBottom: "0.25rem",
-                }}
-              >
-                Riley
-              </div>
-              <div
-                style={{
-                  fontSize: "2.5rem",
-                  fontWeight: "800",
-                  color: leaderColor(rileyTotal, charlotteTotal),
-                  lineHeight: 1,
-                }}
-              >
-                {rileyTotal}
-              </div>
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#666",
-                  marginTop: "0.25rem",
-                }}
-              >
-                correct tips
-              </div>
-            </div>
+          <Paper withBorder p="xl">
+            <SimpleGrid cols={3}>
+              <Stack align="center" gap={4}>
+                <Text fw={700}>Riley</Text>
+                <Title
+                  order={1}
+                  c={rileyTotal > charlotteTotal ? "green" : undefined}
+                >
+                  {rileyTotal}
+                </Title>
+                <Text size="sm" c="dimmed">
+                  correct tips
+                </Text>
+              </Stack>
 
-            <div style={{ textAlign: "center", color: "#bbb" }}>
-              <div style={{ fontSize: "0.75rem", marginBottom: "0.25rem" }}>
-                after
-              </div>
-              <div
-                style={{
-                  fontSize: "1.25rem",
-                  fontWeight: "600",
-                  color: "#999",
-                }}
-              >
-                {roundsPlayed}
-              </div>
-              <div style={{ fontSize: "0.75rem" }}>rounds</div>
-            </div>
+              <Stack align="center" gap={4}>
+                <Text size="xs" c="dimmed">
+                  after
+                </Text>
+                <Title order={3} c="dimmed">
+                  {roundsPlayed}
+                </Title>
+                <Text size="xs" c="dimmed">
+                  {roundsPlayed === 1 ? "round" : "rounds"}
+                </Text>
+              </Stack>
 
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  fontWeight: "700",
-                  fontSize: "1rem",
-                  marginBottom: "0.25rem",
-                }}
-              >
-                Charlotte
-              </div>
-              <div
-                style={{
-                  fontSize: "2.5rem",
-                  fontWeight: "800",
-                  color: leaderColor(charlotteTotal, rileyTotal),
-                  lineHeight: 1,
-                }}
-              >
-                {charlotteTotal}
-              </div>
-              <div
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#666",
-                  marginTop: "0.25rem",
-                }}
-              >
-                correct tips
-              </div>
-            </div>
-          </div>
+              <Stack align="center" gap={4}>
+                <Text fw={700}>Charlotte</Text>
+                <Title
+                  order={1}
+                  c={charlotteTotal > rileyTotal ? "green" : undefined}
+                >
+                  {charlotteTotal}
+                </Title>
+                <Text size="sm" c="dimmed">
+                  correct tips
+                </Text>
+              </Stack>
+            </SimpleGrid>
+          </Paper>
 
-          {/* Round breakdown table */}
-          <h2
-            style={{
-              fontSize: "1rem",
-              fontWeight: "600",
-              marginBottom: "0.75rem",
-              color: "#1a1a1a",
-            }}
-          >
+          <Title order={2} fz="md">
             Round by Round
-          </h2>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              fontSize: "0.9rem",
-            }}
-          >
-            <thead>
-              <tr style={{ backgroundColor: "#f5f5f5" }}>
-                <th
-                  style={{
-                    padding: "0.6rem 1rem",
-                    textAlign: "left",
-                    fontWeight: "600",
-                    color: "#555",
-                  }}
-                >
-                  Round
-                </th>
-                <th
-                  style={{
-                    padding: "0.6rem 1rem",
-                    textAlign: "center",
-                    fontWeight: "600",
-                    color: "#555",
-                  }}
-                >
-                  Riley
-                </th>
-                <th
-                  style={{
-                    padding: "0.6rem 1rem",
-                    textAlign: "center",
-                    fontWeight: "600",
-                    color: "#555",
-                  }}
-                >
-                  Charlotte
-                </th>
-                <th
-                  style={{
-                    padding: "0.6rem 1rem",
-                    textAlign: "center",
-                    fontWeight: "600",
-                    color: "#555",
-                  }}
-                >
-                  Games
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {roundResults.map((r, i) => (
-                <tr
-                  key={r.round}
-                  style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafafa" }}
-                >
-                  <td style={{ padding: "0.6rem 1rem", color: "#555" }}>
-                    Round {r.round}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.6rem 1rem",
-                      textAlign: "center",
-                      ...cellHighlight(r.riley, r.charlotte),
-                    }}
-                  >
-                    {r.riley !== null ? `${r.riley}/${r.total}` : "—"}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.6rem 1rem",
-                      textAlign: "center",
-                      ...cellHighlight(r.charlotte, r.riley),
-                    }}
-                  >
-                    {r.charlotte !== null ? `${r.charlotte}/${r.total}` : "—"}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.6rem 1rem",
-                      textAlign: "center",
-                      color: "#999",
-                    }}
-                  >
-                    {r.total}
-                  </td>
-                </tr>
+          </Title>
+
+          <Table striped withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Round</Table.Th>
+                <Table.Th ta="center">Riley</Table.Th>
+                <Table.Th ta="center">Charlotte</Table.Th>
+                <Table.Th ta="center">Games</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {roundResults.map((r) => (
+                <Table.Tr key={r.round}>
+                  <Table.Td>Round {r.round}</Table.Td>
+                  <Table.Td ta="center">
+                    <Text
+                      fw={
+                        r.riley !== null &&
+                        r.charlotte !== null &&
+                        r.riley > r.charlotte
+                          ? 700
+                          : undefined
+                      }
+                      c={
+                        r.riley !== null &&
+                        r.charlotte !== null &&
+                        r.riley > r.charlotte
+                          ? "green"
+                          : undefined
+                      }
+                    >
+                      {r.riley !== null
+                        ? r.isComplete
+                          ? `${r.riley}`
+                          : `${r.riley}/${r.completedGames}`
+                        : "—"}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td ta="center">
+                    <Text
+                      fw={
+                        r.charlotte !== null &&
+                        r.riley !== null &&
+                        r.charlotte > r.riley
+                          ? 700
+                          : undefined
+                      }
+                      c={
+                        r.charlotte !== null &&
+                        r.riley !== null &&
+                        r.charlotte > r.riley
+                          ? "green"
+                          : undefined
+                      }
+                    >
+                      {r.charlotte !== null
+                        ? r.isComplete
+                          ? `${r.charlotte}`
+                          : `${r.charlotte}/${r.completedGames}`
+                        : "—"}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td ta="center">
+                    <Text c="dimmed">
+                      {r.isComplete
+                        ? `${r.totalGames}`
+                        : `${r.completedGames}/${r.totalGames}`}
+                    </Text>
+                  </Table.Td>
+                </Table.Tr>
               ))}
-            </tbody>
-          </table>
+            </Table.Tbody>
+          </Table>
         </>
       )}
-    </div>
+    </Stack>
   );
 }
