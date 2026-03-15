@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { getCurrentRound, getGames } from "../api/squiggle";
 import { isRoundLocked } from "../lib/deadline";
 import type { Game } from "../types/squiggle";

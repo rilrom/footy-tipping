@@ -2,8 +2,14 @@ import type { Game, Team } from "../types/squiggle";
 
 const BASE_URL = "https://api.squiggle.com.au/";
 
+if (!import.meta.env.VITE_CONTACT_EMAIL) {
+  throw new Error(
+    "VITE_CONTACT_EMAIL must be set in .env.local for squiggle usage.",
+  );
+}
+
 const HEADERS: HeadersInit = {
-  "User-Agent": "footy-tipping-app (personal)",
+  "User-Agent": `footy-tipping (${import.meta.env.VITE_CONTACT_EMAIL})`,
 };
 
 async function squiggleFetch<T>(query: string): Promise<T> {
@@ -17,9 +23,10 @@ async function squiggleFetch<T>(query: string): Promise<T> {
 }
 
 export async function getGames(year: number, round?: number): Promise<Game[]> {
-  const query = round !== undefined
-    ? `q=games;year=${year};round=${round}`
-    : `q=games;year=${year}`;
+  const query =
+    round !== undefined
+      ? `q=games;year=${year};round=${round}`
+      : `q=games;year=${year}`;
 
   const data = await squiggleFetch<{ games: Game[] }>(query);
 
@@ -40,6 +47,6 @@ export async function getCurrentRound(year: number): Promise<number> {
   if (incomplete.length === 0) {
     return Math.max(...games.map((g) => g.round));
   }
-  
+
   return Math.min(...incomplete.map((g) => g.round));
 }

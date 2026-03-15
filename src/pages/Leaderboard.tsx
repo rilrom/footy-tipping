@@ -10,19 +10,15 @@ import {
   Title,
 } from "@mantine/core";
 import { useState } from "react";
+import { config } from "../config";
 import { useGames } from "../hooks/squiggle";
 import { useAllTips } from "../hooks/tips";
 import type { Game } from "../types/squiggle";
 
-type YearTips = Record<
-  string,
-  { riley?: Record<string, string>; charlotte?: Record<string, string> }
->;
-
 interface RoundResult {
   round: number;
-  riley: number | null;
-  charlotte: number | null;
+  p1Score: number | null;
+  p2Score: number | null;
   completedGames: number;
   totalGames: number;
   isComplete: boolean;
@@ -49,7 +45,15 @@ function calcRoundScore(
 export default function Leaderboard() {
   const [year] = useState(new Date().getFullYear());
 
-  const { data: allGames = [], isPending: gamesLoading, isError: gamesError } = useGames(year);
+  const p1 = config.players[0];
+
+  const p2 = config.players[1];
+
+  const {
+    data: allGames = [],
+    isPending: gamesLoading,
+    isError: gamesError,
+  } = useGames(year);
 
   const { data: yearTips = {} } = useAllTips(year);
 
@@ -75,7 +79,7 @@ export default function Leaderboard() {
     return acc;
   }, {});
 
-  const roundResults: RoundResult[] = Object.entries(yearTips as YearTips)
+  const roundResults: RoundResult[] = Object.entries(yearTips)
     .map(([roundStr, players]) => {
       const roundNum = parseInt(roundStr, 10);
 
@@ -85,8 +89,8 @@ export default function Leaderboard() {
 
       return {
         round: roundNum,
-        riley: calcRoundScore(completedInRound, players.riley),
-        charlotte: calcRoundScore(completedInRound, players.charlotte),
+        p1Score: calcRoundScore(completedInRound, players[p1.id]),
+        p2Score: calcRoundScore(completedInRound, players[p2.id]),
         completedGames: completedInRound.length,
         totalGames: allInRound.length,
         isComplete:
@@ -94,15 +98,12 @@ export default function Leaderboard() {
           completedInRound.length === allInRound.length,
       };
     })
-    .filter((r) => r.riley !== null || r.charlotte !== null)
+    .filter((r) => r.p1Score !== null || r.p2Score !== null)
     .sort((a, b) => a.round - b.round);
 
-  const rileyTotal = roundResults.reduce((sum, r) => sum + (r.riley ?? 0), 0);
+  const p1Total = roundResults.reduce((sum, r) => sum + (r.p1Score ?? 0), 0);
 
-  const charlotteTotal = roundResults.reduce(
-    (sum, r) => sum + (r.charlotte ?? 0),
-    0,
-  );
+  const p2Total = roundResults.reduce((sum, r) => sum + (r.p2Score ?? 0), 0);
 
   const roundsPlayed = roundResults.length;
 
@@ -119,7 +120,7 @@ export default function Leaderboard() {
           <Paper withBorder p="xl">
             <SimpleGrid cols={3}>
               <Stack align="center" gap={4}>
-                <Text fw={700}>Riley</Text>
+                <Text fw={700}>{p1.label}</Text>
                 <Skeleton height={34} width={50} />
                 <Text size="sm" c="dimmed">
                   correct tips
@@ -137,7 +138,7 @@ export default function Leaderboard() {
               </Stack>
 
               <Stack align="center" gap={4}>
-                <Text fw={700}>Charlotte</Text>
+                <Text fw={700}>{p2.label}</Text>
                 <Skeleton height={34} width={50} />
                 <Text size="sm" c="dimmed">
                   correct tips
@@ -154,14 +155,14 @@ export default function Leaderboard() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Round</Table.Th>
-                <Table.Th ta="center">Riley</Table.Th>
-                <Table.Th ta="center">Charlotte</Table.Th>
+                <Table.Th ta="center">{p1.label}</Table.Th>
+                <Table.Th ta="center">{p2.label}</Table.Th>
                 <Table.Th ta="center">Games</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Table.Tr key={i}>
+              {["1", "2", "3", "4", "5"].map((n) => (
+                <Table.Tr key={n}>
                   <Table.Td>
                     <Skeleton height={14} width={60} />
                   </Table.Td>
@@ -192,12 +193,9 @@ export default function Leaderboard() {
           <Paper withBorder p="xl">
             <SimpleGrid cols={3}>
               <Stack align="center" gap={4}>
-                <Text fw={700}>Riley</Text>
-                <Title
-                  order={1}
-                  c={rileyTotal > charlotteTotal ? "green" : undefined}
-                >
-                  {rileyTotal}
+                <Text fw={700}>{p1.label}</Text>
+                <Title order={1} c={p1Total > p2Total ? "green" : undefined}>
+                  {p1Total}
                 </Title>
                 <Text size="sm" c="dimmed">
                   correct tips
@@ -217,12 +215,9 @@ export default function Leaderboard() {
               </Stack>
 
               <Stack align="center" gap={4}>
-                <Text fw={700}>Charlotte</Text>
-                <Title
-                  order={1}
-                  c={charlotteTotal > rileyTotal ? "green" : undefined}
-                >
-                  {charlotteTotal}
+                <Text fw={700}>{p2.label}</Text>
+                <Title order={1} c={p2Total > p1Total ? "green" : undefined}>
+                  {p2Total}
                 </Title>
                 <Text size="sm" c="dimmed">
                   correct tips
@@ -239,8 +234,8 @@ export default function Leaderboard() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Round</Table.Th>
-                <Table.Th ta="center">Riley</Table.Th>
-                <Table.Th ta="center">Charlotte</Table.Th>
+                <Table.Th ta="center">{p1.label}</Table.Th>
+                <Table.Th ta="center">{p2.label}</Table.Th>
                 <Table.Th ta="center">Games</Table.Th>
               </Table.Tr>
             </Table.Thead>
@@ -251,48 +246,48 @@ export default function Leaderboard() {
                   <Table.Td ta="center">
                     <Text
                       fw={
-                        r.riley !== null &&
-                        r.charlotte !== null &&
-                        r.riley > r.charlotte
+                        r.p1Score !== null &&
+                        r.p2Score !== null &&
+                        r.p1Score > r.p2Score
                           ? 700
                           : undefined
                       }
                       c={
-                        r.riley !== null &&
-                        r.charlotte !== null &&
-                        r.riley > r.charlotte
+                        r.p1Score !== null &&
+                        r.p2Score !== null &&
+                        r.p1Score > r.p2Score
                           ? "green"
                           : undefined
                       }
                     >
-                      {r.riley !== null
+                      {r.p1Score !== null
                         ? r.isComplete
-                          ? `${r.riley}`
-                          : `${r.riley}/${r.completedGames}`
+                          ? `${r.p1Score}`
+                          : `${r.p1Score}/${r.completedGames}`
                         : "—"}
                     </Text>
                   </Table.Td>
                   <Table.Td ta="center">
                     <Text
                       fw={
-                        r.charlotte !== null &&
-                        r.riley !== null &&
-                        r.charlotte > r.riley
+                        r.p2Score !== null &&
+                        r.p1Score !== null &&
+                        r.p2Score > r.p1Score
                           ? 700
                           : undefined
                       }
                       c={
-                        r.charlotte !== null &&
-                        r.riley !== null &&
-                        r.charlotte > r.riley
+                        r.p2Score !== null &&
+                        r.p1Score !== null &&
+                        r.p2Score > r.p1Score
                           ? "green"
                           : undefined
                       }
                     >
-                      {r.charlotte !== null
+                      {r.p2Score !== null
                         ? r.isComplete
-                          ? `${r.charlotte}`
-                          : `${r.charlotte}/${r.completedGames}`
+                          ? `${r.p2Score}`
+                          : `${r.p2Score}/${r.completedGames}`
                         : "—"}
                     </Text>
                   </Table.Td>

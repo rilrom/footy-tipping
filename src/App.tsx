@@ -15,12 +15,12 @@ export default function App() {
 
       <AppShell.Main>
         <Container size="md">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tips" element={<Tips />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/tips" element={<Tips />} />
+            <Route path="/results" element={<Results />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+          </Routes>
         </Container>
       </AppShell.Main>
     </AppShell>

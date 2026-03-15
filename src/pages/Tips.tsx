@@ -11,14 +11,13 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import GameCard from "../components/GameCard";
+import { config } from "../config";
 import { useCurrentRound, useGames, useRoundLocked } from "../hooks/squiggle";
 import { useSaveTips, useTips } from "../hooks/tips";
 import type { Game } from "../types/squiggle";
 
-type Player = "riley" | "charlotte";
-
 export default function Tips() {
-  const [player, setPlayer] = useState<Player>("riley");
+  const [player, setPlayer] = useState<string>(config.players[0].id);
 
   const [year] = useState(new Date().getFullYear());
 
@@ -28,11 +27,11 @@ export default function Tips() {
 
   const round = currentRound !== undefined ? currentRound + roundOffset : null;
 
-  const { data: games = [], isPending: gamesLoading, isError: gamesError } = useGames(
-    year,
-    round ?? undefined,
-    { enabled: round !== null },
-  );
+  const {
+    data: games = [],
+    isPending: gamesLoading,
+    isError: gamesError,
+  } = useGames(year, round ?? undefined, { enabled: round !== null });
 
   const { data: tipsData } = useTips(year, round ?? -1, {
     enabled: round !== null,
@@ -50,7 +49,8 @@ export default function Tips() {
 
   const isLocked = roundLocked || roundOffset < 0;
 
-  const roundComplete = games.length > 0 && games.every((g) => g.complete === 100);
+  const roundComplete =
+    games.length > 0 && games.every((g) => g.complete === 100);
 
   const lockedMessage = roundComplete
     ? "This round is complete — tips are locked."
@@ -84,11 +84,8 @@ export default function Tips() {
 
       <SegmentedControl
         value={player}
-        onChange={(v) => setPlayer(v as Player)}
-        data={[
-          { value: "riley", label: "Riley" },
-          { value: "charlotte", label: "Charlotte" },
-        ]}
+        onChange={(v) => setPlayer(v)}
+        data={config.players.map((p) => ({ value: p.id, label: p.label }))}
         w="fit-content"
       />
 
@@ -126,8 +123,8 @@ export default function Tips() {
         </Alert>
       ) : gamesLoading ? (
         <Stack gap="sm">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} height={72} radius="md" />
+          {["1", "2", "3", "4", "5"].map((n) => (
+            <Skeleton key={n} height={72} radius="md" />
           ))}
         </Stack>
       ) : sortedGames.length === 0 ? (

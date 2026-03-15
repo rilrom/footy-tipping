@@ -11,13 +11,13 @@ import {
   Title,
 } from "@mantine/core";
 import { useState } from "react";
+import { config } from "../config";
 import { useCurrentRound, useGames } from "../hooks/squiggle";
 import { useTips } from "../hooks/tips";
 import type { Game } from "../types/squiggle";
 
 interface RoundTips {
-  riley: Record<string, string>;
-  charlotte: Record<string, string>;
+  [player: string]: Record<string, string>;
 }
 
 function calcScore(games: Game[], playerTips: Record<string, string>) {
@@ -82,28 +82,32 @@ export default function Results() {
 
   const round = currentRound !== undefined ? currentRound + roundOffset : null;
 
-  const { data: games = [], isPending: gamesLoading, isError: gamesError } = useGames(
-    year,
-    round ?? undefined,
-    { enabled: round !== null },
-  );
+  const {
+    data: games = [],
+    isPending: gamesLoading,
+    isError: gamesError,
+  } = useGames(year, round ?? undefined, { enabled: round !== null });
 
   const { data: tipsData } = useTips(year, round ?? -1, {
     enabled: round !== null,
   });
 
+  const p1 = config.players[0];
+
+  const p2 = config.players[1];
+
   const roundTips: RoundTips = {
-    riley: tipsData?.riley ?? {},
-    charlotte: tipsData?.charlotte ?? {},
+    [p1.id]: tipsData?.[p1.id] ?? {},
+    [p2.id]: tipsData?.[p2.id] ?? {},
   };
 
   const sortedGames = [...games].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  const rileyScore = calcScore(sortedGames, roundTips.riley);
+  const p1Score = calcScore(sortedGames, roundTips[p1.id]);
 
-  const charlotteScore = calcScore(sortedGames, roundTips.charlotte);
+  const p2Score = calcScore(sortedGames, roundTips[p2.id]);
 
   const hasCompleted = sortedGames.some((g) => g.complete === 100);
 
@@ -146,7 +150,7 @@ export default function Results() {
           <SimpleGrid cols={3}>
             <Stack align="center" gap={4}>
               <Text size="sm" c="dimmed">
-                Riley
+                {p1.label}
               </Text>
               <Skeleton height={36} width={60} />
             </Stack>
@@ -155,7 +159,7 @@ export default function Results() {
             </Stack>
             <Stack align="center" gap={4}>
               <Text size="sm" c="dimmed">
-                Charlotte
+                {p2.label}
               </Text>
               <Skeleton height={36} width={60} />
             </Stack>
@@ -168,17 +172,15 @@ export default function Results() {
           <SimpleGrid cols={3}>
             <Stack align="center" gap={4}>
               <Text size="sm" c="dimmed">
-                Riley
+                {p1.label}
               </Text>
               <Title
                 order={2}
-                c={
-                  rileyScore.correct > charlotteScore.correct ? "green" : undefined
-                }
+                c={p1Score.correct > p2Score.correct ? "green" : undefined}
               >
-                {rileyScore.correct}
+                {p1Score.correct}
                 <Text span size="md" fw={400} c="dimmed">
-                  /{rileyScore.total}
+                  /{p1Score.total}
                 </Text>
               </Title>
             </Stack>
@@ -191,17 +193,15 @@ export default function Results() {
 
             <Stack align="center" gap={4}>
               <Text size="sm" c="dimmed">
-                Charlotte
+                {p2.label}
               </Text>
               <Title
                 order={2}
-                c={
-                  charlotteScore.correct > rileyScore.correct ? "green" : undefined
-                }
+                c={p2Score.correct > p1Score.correct ? "green" : undefined}
               >
-                {charlotteScore.correct}
+                {p2Score.correct}
                 <Text span size="md" fw={400} c="dimmed">
-                  /{charlotteScore.total}
+                  /{p2Score.total}
                 </Text>
               </Title>
             </Stack>
@@ -213,13 +213,13 @@ export default function Results() {
         <Grid>
           <Grid.Col span={4}>
             <Text fw={600} size="sm" c="dimmed" ta="right">
-              Riley
+              {p1.label}
             </Text>
           </Grid.Col>
           <Grid.Col span={4} />
           <Grid.Col span={4}>
             <Text fw={600} size="sm" c="dimmed">
-              Charlotte
+              {p2.label}
             </Text>
           </Grid.Col>
         </Grid>
@@ -231,8 +231,8 @@ export default function Results() {
         </Alert>
       ) : gamesLoading ? (
         <Stack gap="xs">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Paper key={i} withBorder p="sm">
+          {["1", "2", "3", "4", "5"].map((n) => (
+            <Paper key={n} withBorder p="sm">
               <Grid align="center">
                 <Grid.Col span={4}>
                   <Group justify="flex-end">
@@ -259,13 +259,13 @@ export default function Results() {
           {sortedGames.map((game) => {
             const id = game.id.toString();
 
-            const rileyTip = roundTips.riley[id] ?? null;
+            const p1Tip = roundTips[p1.id][id] ?? null;
 
-            const charlotteTip = roundTips.charlotte[id] ?? null;
+            const p2Tip = roundTips[p2.id][id] ?? null;
 
-            const rileyStatus = getTipStatus(game, rileyTip);
+            const p1Status = getTipStatus(game, p1Tip);
 
-            const charlotteStatus = getTipStatus(game, charlotteTip);
+            const p2Status = getTipStatus(game, p2Tip);
 
             const isComplete = game.complete === 100;
 
@@ -274,7 +274,7 @@ export default function Results() {
                 <Grid align="center">
                   <Grid.Col span={4}>
                     <Group justify="flex-end">
-                      {renderTip(rileyTip, rileyStatus)}
+                      {renderTip(p1Tip, p1Status)}
                     </Group>
                   </Grid.Col>
 
@@ -306,7 +306,7 @@ export default function Results() {
 
                   <Grid.Col span={4}>
                     <Group justify="flex-start">
-                      {renderTip(charlotteTip, charlotteStatus)}
+                      {renderTip(p2Tip, p2Status)}
                     </Group>
                   </Grid.Col>
                 </Grid>

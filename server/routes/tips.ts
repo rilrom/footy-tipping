@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { type Request, type Response, Router } from "express";
 
 const router = Router();
@@ -20,6 +20,7 @@ function readTips(): TipsData {
 }
 
 function writeTips(data: TipsData): void {
+  mkdirSync(dirname(DATA_FILE), { recursive: true });
   writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
@@ -41,7 +42,7 @@ router.post("/", (req: Request, res: Response) => {
   const { year, round, player, tips } = req.body as {
     year: string;
     round: string;
-    player: "riley" | "charlotte";
+    player: string;
     tips: Record<string, string>;
   };
 
@@ -59,7 +60,7 @@ router.post("/", (req: Request, res: Response) => {
   data[year][round][player] = { ...data[year][round][player], ...tips };
 
   writeTips(data);
-  
+
   res.json({ success: true });
 });
 

@@ -2,17 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const STALE_TIME = 60 * 1000; // 1 minute
 
-// Per-round endpoint: { riley: { gameId: team }, charlotte: { gameId: team } }
+// Per-round endpoint: { [playerId]: { gameId: team } }
 interface RoundTipsResponse {
-  riley?: Record<string, string>;
-  charlotte?: Record<string, string>;
+  [player: string]: Record<string, string>;
 }
 
-// All-rounds endpoint: { "1": { riley: {...}, charlotte: {...} }, "2": {...} }
-type YearTipsResponse = Record<
-  string,
-  { riley?: Record<string, string>; charlotte?: Record<string, string> }
->;
+// All-rounds endpoint: { [round]: { [playerId]: { gameId: team } } }
+interface YearTipsResponse {
+  [round: string]: { [player: string]: Record<string, string> };
+}
 
 interface SaveTipsArgs {
   year: string;
@@ -25,11 +23,7 @@ interface UseTipsOptions {
   enabled?: boolean;
 }
 
-export function useTips(
-  year: number,
-  round: number,
-  options?: UseTipsOptions,
-) {
+export function useTips(year: number, round: number, options?: UseTipsOptions) {
   return useQuery<RoundTipsResponse>({
     queryKey: ["tips", year, round],
     queryFn: () =>
