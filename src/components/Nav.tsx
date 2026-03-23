@@ -1,4 +1,4 @@
-import { Group, Text } from "@mantine/core";
+import { ActionIcon, Group, Text, useMantineColorScheme } from "@mantine/core";
 import { NavLink } from "react-router-dom";
 
 function navLinkStyle({
@@ -21,26 +21,39 @@ function navLinkStyle({
 }
 
 export default function Nav() {
-  return (
-    <Group h="100%" px="md" gap="lg">
-      <Text fw={700} size="lg">
-        Footy Tipping 🏉
-      </Text>
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
-      <Group gap="sm">
-        <NavLink to="/" end style={navLinkStyle}>
-          Home
-        </NavLink>
-        <NavLink to="/tips" style={navLinkStyle}>
-          Tips
-        </NavLink>
-        <NavLink to="/results" style={navLinkStyle}>
-          Results
-        </NavLink>
-        <NavLink to="/leaderboard" style={navLinkStyle}>
-          Leaderboard
-        </NavLink>
+  return (
+    <Group h="100%" px="md" gap="lg" justify="space-between">
+      <Group gap="lg">
+        <Text fw={700} size="lg">
+          Footy Tipping 🏉
+        </Text>
+
+        <Group gap="sm">
+          <NavLink to="/" end style={navLinkStyle}>
+            Home
+          </NavLink>
+          <NavLink to="/tips" style={navLinkStyle}>
+            Tips
+          </NavLink>
+          <NavLink to="/results" style={navLinkStyle}>
+            Results
+          </NavLink>
+          <NavLink to="/leaderboard" style={navLinkStyle}>
+            Leaderboard
+          </NavLink>
+        </Group>
       </Group>
+
+      <ActionIcon
+        variant="default"
+        size="lg"
+        onClick={toggleColorScheme}
+        aria-label="Toggle color scheme"
+      >
+        {colorScheme === "dark" ? "☀️" : "🌙"}
+      </ActionIcon>
     </Group>
   );
 }
