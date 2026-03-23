@@ -281,8 +281,15 @@ export default function Results() {
                   <Grid.Col span={4}>
                     <Stack align="center" gap={2}>
                       <Text size="xs" c="dimmed">
-                        {game.hteam} vs {game.ateam}
+                        {game.hteam} (H) vs {game.ateam} (A)
                       </Text>
+
+                      {game.venue && (
+                        <Text size="xs" c="dimmed" fs="italic">
+                          {game.venue}
+                        </Text>
+                      )}
+
                       {isComplete ? (
                         <Text size="xs" fw={500}>
                           {game.winner} won · {game.hscore}–{game.ascore}

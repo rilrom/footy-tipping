@@ -12,6 +12,7 @@ export interface Game {
   hscore: number | null;
   ascore: number | null;
   roundname: string;
+  venue: string;
 }
 
 export interface Team {

@@ -29,6 +29,7 @@ export default function GameCard(props: GameCardProps) {
     <Card shadow="xs" withBorder padding="md">
       <Text size="xs" c="dimmed" mb="xs">
         {game.date ? formatDate(game.date) : "TBC"}
+        {game.venue ? ` · ${game.venue}` : ""}
       </Text>
 
       <Group justify="space-between">
@@ -43,6 +44,9 @@ export default function GameCard(props: GameCardProps) {
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.hteam}
+          <Text span size="xs" c="dimmed" ml={4}>
+            (H)
+          </Text>
         </Button>
 
         <Text c="dimmed" size="sm">
@@ -60,6 +64,9 @@ export default function GameCard(props: GameCardProps) {
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.ateam}
+          <Text span size="xs" c="dimmed" ml={4}>
+            (A)
+          </Text>
         </Button>
       </Group>
 
