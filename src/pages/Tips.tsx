@@ -12,9 +12,14 @@ import {
 import { useState } from "react";
 import GameCard from "../components/GameCard";
 import { config } from "../config";
-import { useCurrentRound, useGames, useRoundLocked } from "../hooks/squiggle";
+import {
+  useCurrentRound,
+  useGames,
+  useRoundLocked,
+  useStandings,
+} from "../hooks/squiggle";
 import { useSaveTips, useTips } from "../hooks/tips";
-import type { Game } from "../types/squiggle";
+import type { Game, Standing } from "../types/squiggle";
 
 export default function Tips() {
   const [player, setPlayer] = useState<string>(config.players[0].id);
@@ -32,6 +37,12 @@ export default function Tips() {
     isPending: gamesLoading,
     isError: gamesError,
   } = useGames(year, round ?? undefined, { enabled: round !== null });
+
+  const { data: standingsData } = useStandings(year);
+
+  const standings: Record<number, Standing> = Object.fromEntries(
+    (standingsData ?? []).map((s) => [s.id, s]),
+  );
 
   const { data: tipsData } = useTips(year, round ?? -1, {
     enabled: round !== null,
@@ -144,6 +155,7 @@ export default function Tips() {
               onTip={(teamName) => handleTip(game, teamName)}
               locked={isLocked}
               disabled={game.complete === 100}
+              standings={standings}
             />
           ))}
         </Stack>

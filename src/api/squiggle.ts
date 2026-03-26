@@ -1,4 +1,4 @@
-import type { Game, Team } from "../types/squiggle";
+import type { Game, Standing, Team } from "../types/squiggle";
 
 const BASE_URL = "https://api.squiggle.com.au/";
 
@@ -37,6 +37,14 @@ export async function getTeams(): Promise<Team[]> {
   const data = await squiggleFetch<{ teams: Team[] }>("q=teams");
 
   return data.teams;
+}
+
+export async function getStandings(year: number): Promise<Standing[]> {
+  const data = await squiggleFetch<{ standings: Standing[] }>(
+    `q=standings;year=${year}`,
+  );
+
+  return data.standings;
 }
 
 export async function getCurrentRound(year: number): Promise<number> {

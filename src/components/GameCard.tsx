@@ -1,5 +1,5 @@
 import { Button, Card, Group, Text } from "@mantine/core";
-import type { Game } from "../types/squiggle";
+import type { Game, Standing } from "../types/squiggle";
 
 interface GameCardProps {
   game: Game;
@@ -7,6 +7,8 @@ interface GameCardProps {
   onTip: (teamName: string) => void;
   disabled?: boolean;
   locked?: boolean;
+  standings?: Record<number, Standing>;
+}
 }
 
 function formatDate(dateStr: string): string {
@@ -23,7 +25,17 @@ function formatDate(dateStr: string): string {
 }
 
 export default function GameCard(props: GameCardProps) {
-  const { game, tip, onTip, disabled = false, locked = false } = props;
+  const {
+    game,
+    tip,
+    onTip,
+    disabled = false,
+    locked = false,
+    standings,
+  } = props;
+
+  const hstanding = standings?.[game.hteamid];
+  const astanding = standings?.[game.ateamid];
 
   return (
     <Card shadow="xs" withBorder padding="md">
@@ -47,6 +59,11 @@ export default function GameCard(props: GameCardProps) {
           <Text span size="xs" c="dimmed" ml={4}>
             (H)
           </Text>
+          {hstanding && (
+            <Text span size="xs" c="dimmed" ml={4}>
+              {hstanding.wins}-{hstanding.losses}-{hstanding.draws}
+            </Text>
+          )}
         </Button>
 
         <Text c="dimmed" size="sm">
@@ -67,6 +84,11 @@ export default function GameCard(props: GameCardProps) {
           <Text span size="xs" c="dimmed" ml={4}>
             (A)
           </Text>
+          {astanding && (
+            <Text span size="xs" c="dimmed" ml={4}>
+              {astanding.wins}-{astanding.losses}-{astanding.draws}
+            </Text>
+          )}
         </Button>
       </Group>
 
