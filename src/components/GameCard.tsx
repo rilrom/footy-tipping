@@ -9,10 +9,41 @@ interface GameCardProps {
   locked?: boolean;
   standings?: Record<number, Standing>;
 }
+
+// Squiggle returns datetimes in Australia/Sydney time without a timezone offset.
+// Parse by treating the string as UTC, computing the Sydney offset at that
+// instant, then applying it to get the true UTC timestamp.
+function parseSydneyDate(dateStr: string): Date {
+  const asUtc = new Date(`${dateStr.replace(" ", "T")}Z`);
+
+  const parts = new Intl.DateTimeFormat("en-AU", {
+    timeZone: "Australia/Sydney",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(asUtc);
+
+  const get = (type: string) =>
+    parseInt(parts.find((p) => p.type === type)?.value ?? "0", 10);
+
+  const sydneyAsUtc = Date.UTC(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour"),
+    get("minute"),
+    get("second"),
+  );
+
+  return new Date(asUtc.getTime() + (asUtc.getTime() - sydneyAsUtc));
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
+  const date = parseSydneyDate(dateStr);
 
   return date.toLocaleString("en-AU", {
     weekday: "short",
