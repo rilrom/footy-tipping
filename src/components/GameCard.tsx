@@ -56,11 +56,21 @@ export default function GameCard(props: GameCardProps) {
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.hteam}
-          <Text span size="xs" c="dimmed" ml={4}>
+          <Text
+            span
+            size="xs"
+            c={tip === game.hteam ? undefined : "dimmed"}
+            ml={4}
+          >
             (H)
           </Text>
           {hstanding && (
-            <Text span size="xs" c="dimmed" ml={4}>
+            <Text
+              span
+              size="xs"
+              c={tip === game.hteam ? undefined : "dimmed"}
+              ml={4}
+            >
               {hstanding.wins}-{hstanding.losses}-{hstanding.draws}
             </Text>
           )}
@@ -81,11 +91,21 @@ export default function GameCard(props: GameCardProps) {
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.ateam}
-          <Text span size="xs" c="dimmed" ml={4}>
+          <Text
+            span
+            size="xs"
+            c={tip === game.ateam ? undefined : "dimmed"}
+            ml={4}
+          >
             (A)
           </Text>
           {astanding && (
-            <Text span size="xs" c="dimmed" ml={4}>
+            <Text
+              span
+              size="xs"
+              c={tip === game.ateam ? undefined : "dimmed"}
+              ml={4}
+            >
               {astanding.wins}-{astanding.losses}-{astanding.draws}
             </Text>
           )}
