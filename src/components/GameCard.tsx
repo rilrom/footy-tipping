@@ -55,6 +55,30 @@ function formatDate(dateStr: string): string {
   });
 }
 
+function formatRank(rank: number): string {
+  const lastTwoDigits = rank % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
+    return `${rank}th`;
+  }
+
+  const lastDigit = rank % 10;
+
+  if (lastDigit === 1) {
+    return `${rank}st`;
+  }
+
+  if (lastDigit === 2) {
+    return `${rank}nd`;
+  }
+
+  if (lastDigit === 3) {
+    return `${rank}rd`;
+  }
+
+  return `${rank}th`;
+}
+
 export default function GameCard(props: GameCardProps) {
   const {
     game,
@@ -68,6 +92,14 @@ export default function GameCard(props: GameCardProps) {
   const hstanding = standings?.[game.hteamid];
   const astanding = standings?.[game.ateamid];
 
+  function handleTeamClick(teamName: string) {
+    if (disabled || locked) {
+      return;
+    }
+
+    onTip(teamName);
+  }
+
   return (
     <Card shadow="xs" withBorder padding="md">
       <Text size="xs" c="dimmed" mb="xs">
@@ -79,9 +111,7 @@ export default function GameCard(props: GameCardProps) {
         <Button
           variant={tip === game.hteam ? "filled" : "default"}
           onClick={() => {
-            if (!disabled && !locked) {
-              onTip(game.hteam);
-            }
+            handleTeamClick(game.hteam);
           }}
           disabled={disabled}
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
@@ -102,7 +132,7 @@ export default function GameCard(props: GameCardProps) {
               c={tip === game.hteam ? undefined : "dimmed"}
               ml={4}
             >
-              {hstanding.wins}-{hstanding.losses}-{hstanding.draws}
+              {formatRank(hstanding.rank)}
             </Text>
           )}
         </Button>
@@ -114,9 +144,7 @@ export default function GameCard(props: GameCardProps) {
         <Button
           variant={tip === game.ateam ? "filled" : "default"}
           onClick={() => {
-            if (!disabled && !locked) {
-              onTip(game.ateam);
-            }
+            handleTeamClick(game.ateam);
           }}
           disabled={disabled}
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
@@ -137,7 +165,7 @@ export default function GameCard(props: GameCardProps) {
               c={tip === game.ateam ? undefined : "dimmed"}
               ml={4}
             >
-              {astanding.wins}-{astanding.losses}-{astanding.draws}
+              {formatRank(astanding.rank)}
             </Text>
           )}
         </Button>
