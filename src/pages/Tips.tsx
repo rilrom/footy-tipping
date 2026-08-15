@@ -41,6 +41,8 @@ export default function Tips() {
     isError: gamesError,
   } = useGames(year, round ?? undefined, { enabled: round !== null });
 
+  const { data: seasonGames = [] } = useGames(year);
+
   const { data: standingsData } = useStandings(year);
 
   const standings: Record<number, Standing> = Object.fromEntries(
@@ -160,6 +162,7 @@ export default function Tips() {
               hideResults={preferences.hideResults}
               disabled={game.complete === 100 && !preferences.allowLateTipping}
               standings={standings}
+              seasonGames={seasonGames}
             />
           ))}
         </Stack>

@@ -1,5 +1,14 @@
-import { Button, Card, Group, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Card,
+  Group,
+  Text,
+} from "@mantine/core";
+import { useState } from "react";
+import { formatRank } from "../lib/teamForm";
 import type { Game, Standing } from "../types/squiggle";
+import TeamFormModal, { type TeamFormTeam } from "./TeamFormModal";
 
 interface GameCardProps {
   game: Game;
@@ -9,6 +18,7 @@ interface GameCardProps {
   locked?: boolean;
   hideResults?: boolean;
   standings?: Record<number, Standing>;
+  seasonGames?: Game[];
 }
 
 // Squiggle returns datetimes in Australia/Sydney time without a timezone offset.
@@ -56,30 +66,6 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function formatRank(rank: number): string {
-  const lastTwoDigits = rank % 100;
-
-  if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
-    return `${rank}th`;
-  }
-
-  const lastDigit = rank % 10;
-
-  if (lastDigit === 1) {
-    return `${rank}st`;
-  }
-
-  if (lastDigit === 2) {
-    return `${rank}nd`;
-  }
-
-  if (lastDigit === 3) {
-    return `${rank}rd`;
-  }
-
-  return `${rank}th`;
-}
-
 export default function GameCard(props: GameCardProps) {
   const {
     game,
@@ -89,7 +75,10 @@ export default function GameCard(props: GameCardProps) {
     locked = false,
     hideResults = false,
     standings,
+    seasonGames = [],
   } = props;
+
+  const [selectedTeam, setSelectedTeam] = useState<TeamFormTeam | null>(null);
 
   const hstanding = standings?.[game.hteamid];
   const astanding = standings?.[game.ateamid];
@@ -110,69 +99,97 @@ export default function GameCard(props: GameCardProps) {
       </Text>
 
       <Group justify="space-between">
-        <Button
-          variant={tip === game.hteam ? "filled" : "default"}
-          onClick={() => {
-            handleTeamClick(game.hteam);
-          }}
-          disabled={disabled && tip !== game.hteam}
-          aria-disabled={disabled}
-          style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
-        >
-          {game.hteam}
-          <Text
-            span
-            size="xs"
-            c={tip === game.hteam ? undefined : "dimmed"}
-            ml={4}
+        <Group gap={4} wrap="nowrap" style={{ width: "44%" }}>
+          <Button
+            variant={tip === game.hteam ? "filled" : "default"}
+            onClick={() => {
+              handleTeamClick(game.hteam);
+            }}
+            disabled={disabled && tip !== game.hteam}
+            aria-disabled={disabled}
+            style={{ flex: 1, cursor: locked ? "not-allowed" : undefined }}
           >
-            (H)
-          </Text>
-          {hstanding && (
+            {game.hteam}
             <Text
               span
               size="xs"
               c={tip === game.hteam ? undefined : "dimmed"}
               ml={4}
             >
-              {formatRank(hstanding.rank)}
+              (H)
             </Text>
-          )}
-        </Button>
+            {hstanding && (
+              <Text
+                span
+                size="xs"
+                c={tip === game.hteam ? undefined : "dimmed"}
+                ml={4}
+              >
+                {formatRank(hstanding.rank)}
+              </Text>
+            )}
+          </Button>
+          <ActionIcon
+            variant="light"
+            color="blue"
+            size="sm"
+            aria-label={`View ${game.hteam} form`}
+            title={`View ${game.hteam} form`}
+            onClick={() => {
+              setSelectedTeam({ id: game.hteamid, name: game.hteam });
+            }}
+          >
+            i
+          </ActionIcon>
+        </Group>
 
         <Text c="dimmed" size="sm">
           vs
         </Text>
 
-        <Button
-          variant={tip === game.ateam ? "filled" : "default"}
-          onClick={() => {
-            handleTeamClick(game.ateam);
-          }}
-          disabled={disabled && tip !== game.ateam}
-          aria-disabled={disabled}
-          style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
-        >
-          {game.ateam}
-          <Text
-            span
-            size="xs"
-            c={tip === game.ateam ? undefined : "dimmed"}
-            ml={4}
+        <Group gap={4} wrap="nowrap" style={{ width: "44%" }}>
+          <Button
+            variant={tip === game.ateam ? "filled" : "default"}
+            onClick={() => {
+              handleTeamClick(game.ateam);
+            }}
+            disabled={disabled && tip !== game.ateam}
+            aria-disabled={disabled}
+            style={{ flex: 1, cursor: locked ? "not-allowed" : undefined }}
           >
-            (A)
-          </Text>
-          {astanding && (
+            {game.ateam}
             <Text
               span
               size="xs"
               c={tip === game.ateam ? undefined : "dimmed"}
               ml={4}
             >
-              {formatRank(astanding.rank)}
+              (A)
             </Text>
-          )}
-        </Button>
+            {astanding && (
+              <Text
+                span
+                size="xs"
+                c={tip === game.ateam ? undefined : "dimmed"}
+                ml={4}
+              >
+                {formatRank(astanding.rank)}
+              </Text>
+            )}
+          </Button>
+          <ActionIcon
+            variant="light"
+            color="blue"
+            size="sm"
+            aria-label={`View ${game.ateam} form`}
+            title={`View ${game.ateam} form`}
+            onClick={() => {
+              setSelectedTeam({ id: game.ateamid, name: game.ateam });
+            }}
+          >
+            i
+          </ActionIcon>
+        </Group>
       </Group>
 
       {disabled && game.winner && !hideResults && (
@@ -181,6 +198,15 @@ export default function GameCard(props: GameCardProps) {
           {game.ascore ?? "—"}
         </Text>
       )}
+
+      <TeamFormModal
+        team={selectedTeam}
+        games={seasonGames}
+        standing={selectedTeam ? standings?.[selectedTeam.id] : undefined}
+        onClose={() => {
+          setSelectedTeam(null);
+        }}
+      />
     </Card>
   );
 }
