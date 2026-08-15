@@ -7,6 +7,7 @@ interface GameCardProps {
   onTip: (teamName: string) => void;
   disabled?: boolean;
   locked?: boolean;
+  hideResults?: boolean;
   standings?: Record<number, Standing>;
 }
 
@@ -86,6 +87,7 @@ export default function GameCard(props: GameCardProps) {
     onTip,
     disabled = false,
     locked = false,
+    hideResults = false,
     standings,
   } = props;
 
@@ -113,7 +115,8 @@ export default function GameCard(props: GameCardProps) {
           onClick={() => {
             handleTeamClick(game.hteam);
           }}
-          disabled={disabled}
+          disabled={disabled && tip !== game.hteam}
+          aria-disabled={disabled}
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.hteam}
@@ -146,7 +149,8 @@ export default function GameCard(props: GameCardProps) {
           onClick={() => {
             handleTeamClick(game.ateam);
           }}
-          disabled={disabled}
+          disabled={disabled && tip !== game.ateam}
+          aria-disabled={disabled}
           style={{ width: "44%", cursor: locked ? "not-allowed" : undefined }}
         >
           {game.ateam}
@@ -171,7 +175,7 @@ export default function GameCard(props: GameCardProps) {
         </Button>
       </Group>
 
-      {disabled && game.winner && (
+      {disabled && game.winner && !hideResults && (
         <Text size="sm" c="dimmed" ta="center" mt="xs">
           {game.winner} won · {game.hteam} {game.hscore ?? "—"} – {game.ateam}{" "}
           {game.ascore ?? "—"}

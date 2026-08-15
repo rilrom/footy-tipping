@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import { config } from "../config";
+import { usePreferences } from "../hooks/preferences";
 import { useCurrentRound, useGames } from "../hooks/squiggle";
 import { useTips } from "../hooks/tips";
 import type { Game } from "../types/squiggle";
@@ -82,6 +83,8 @@ export default function Results() {
 
   const round = currentRound !== undefined ? currentRound + roundOffset : null;
 
+  const { preferences } = usePreferences();
+
   const {
     data: games = [],
     isPending: gamesLoading,
@@ -105,9 +108,11 @@ export default function Results() {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  const p1Score = calcScore(sortedGames, roundTips[p1.id]);
+  const hideResults = preferences.hideResults;
 
-  const p2Score = calcScore(sortedGames, roundTips[p2.id]);
+  const p1Score = hideResults ? null : calcScore(sortedGames, roundTips[p1.id]);
+
+  const p2Score = hideResults ? null : calcScore(sortedGames, roundTips[p2.id]);
 
   const hasCompleted = sortedGames.some((g) => g.complete === 100);
 
@@ -145,6 +150,12 @@ export default function Results() {
         </ActionIcon>
       </Group>
 
+      {hideResults && (
+        <Alert color="blue" title="Results hidden">
+          Winners, scores, and tip correctness are hidden on this page.
+        </Alert>
+      )}
+
       {gamesLoading && !gamesError && (
         <Paper withBorder p="md">
           <SimpleGrid cols={3}>
@@ -167,7 +178,7 @@ export default function Results() {
         </Paper>
       )}
 
-      {!gamesLoading && !gamesError && hasCompleted && (
+      {!hideResults && !gamesLoading && !gamesError && hasCompleted && (
         <Paper withBorder p="md">
           <SimpleGrid cols={3}>
             <Stack align="center" gap={4}>
@@ -176,11 +187,15 @@ export default function Results() {
               </Text>
               <Title
                 order={2}
-                c={p1Score.correct > p2Score.correct ? "green" : undefined}
+                c={
+                  p1Score !== null && p2Score !== null && p1Score.correct > p2Score.correct
+                    ? "green"
+                    : undefined
+                }
               >
-                {p1Score.correct}
+                {p1Score?.correct}
                 <Text span size="md" fw={400} c="dimmed">
-                  /{p1Score.total}
+                  /{p1Score?.total}
                 </Text>
               </Title>
             </Stack>
@@ -197,11 +212,15 @@ export default function Results() {
               </Text>
               <Title
                 order={2}
-                c={p2Score.correct > p1Score.correct ? "green" : undefined}
+                c={
+                  p1Score !== null && p2Score !== null && p2Score.correct > p1Score.correct
+                    ? "green"
+                    : undefined
+                }
               >
-                {p2Score.correct}
+                {p2Score?.correct}
                 <Text span size="md" fw={400} c="dimmed">
-                  /{p2Score.total}
+                  /{p2Score?.total}
                 </Text>
               </Title>
             </Stack>
@@ -274,7 +293,7 @@ export default function Results() {
                 <Grid align="center">
                   <Grid.Col span={4}>
                     <Group justify="flex-end">
-                      {renderTip(p1Tip, p1Status)}
+                      {renderTip(p1Tip, hideResults ? "pending" : p1Status)}
                     </Group>
                   </Grid.Col>
 
@@ -290,7 +309,11 @@ export default function Results() {
                         </Text>
                       )}
 
-                      {isComplete ? (
+                      {hideResults ? (
+                        <Text size="xs" c="dimmed" fs="italic">
+                          Results hidden
+                        </Text>
+                      ) : isComplete ? (
                         <Text size="xs" fw={500}>
                           {game.winner} won · {game.hscore}–{game.ascore}
                         </Text>
@@ -313,7 +336,7 @@ export default function Results() {
 
                   <Grid.Col span={4}>
                     <Group justify="flex-start">
-                      {renderTip(p2Tip, p2Status)}
+                      {renderTip(p2Tip, hideResults ? "pending" : p2Status)}
                     </Group>
                   </Grid.Col>
                 </Grid>

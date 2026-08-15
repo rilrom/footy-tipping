@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import GameCard from "../components/GameCard";
 import { config } from "../config";
+import { usePreferences } from "../hooks/preferences";
 import {
   useCurrentRound,
   useGames,
@@ -31,6 +32,8 @@ export default function Tips() {
   const { data: currentRound } = useCurrentRound(year);
 
   const round = currentRound !== undefined ? currentRound + roundOffset : null;
+
+  const { preferences } = usePreferences();
 
   const {
     data: games = [],
@@ -58,7 +61,7 @@ export default function Tips() {
 
   const roundLocked = useRoundLocked(games);
 
-  const isLocked = roundLocked || roundOffset < 0;
+  const isLocked = roundLocked && !preferences.allowLateTipping;
 
   const roundComplete =
     games.length > 0 && games.every((g) => g.complete === 100);
@@ -154,7 +157,8 @@ export default function Tips() {
               tip={tips[game.id.toString()] ?? null}
               onTip={(teamName) => handleTip(game, teamName)}
               locked={isLocked}
-              disabled={game.complete === 100}
+              hideResults={preferences.hideResults}
+              disabled={game.complete === 100 && !preferences.allowLateTipping}
               standings={standings}
             />
           ))}
